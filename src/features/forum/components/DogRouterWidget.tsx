@@ -1,14 +1,15 @@
 import { useMemo, useState } from 'react'
 import { X } from 'lucide-react'
-import { matches, FAQS } from '../utils/search.js'
+import { matches, FAQS } from '../model/search'
+import type { FeedItem, Topic } from '../model/types'
 
 // 16x16 pixel-art wolf: [x, y, w, h, color]
-const PX = [
+const PX: [number, number, number, number, string][] = [
   [2,1,2,3,'#6b7280'],[12,1,2,3,'#6b7280'],[3,3,10,2,'#9ca3af'],[2,5,12,6,'#9ca3af'],[4,11,8,3,'#d1d5db'],
   [4,6,2,2,'#071917'],[10,6,2,2,'#071917'],[6,9,4,2,'#374151'],[7,9,2,1,'#071917'],[2,5,1,4,'#6b7280'],[13,5,1,4,'#6b7280'],
 ]
 
-function Wolf({ size = 36 }) {
+function Wolf({ size = 36 }: { size?: number }) {
   return (
     <svg viewBox="0 0 16 16" width={size} height={size} shapeRendering="crispEdges" aria-hidden="true">
       {PX.map(([x, y, w, h, c], i) => <rect key={i} x={x} y={y} width={w} height={h} fill={c} />)}
@@ -16,14 +17,20 @@ function Wolf({ size = 36 }) {
   )
 }
 
-export default function DogRouterWidget({ items, onFilter, onOpen }) {
+interface Props {
+  items: FeedItem[]
+  onFilter: (topic: Topic) => void
+  onOpen: (id: string) => void
+}
+
+export default function DogRouterWidget({ items, onFilter, onOpen }: Props) {
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
   const hits = useMemo(() => (q.trim() ? items.filter((i) => matches(i, q)) : []), [items, q])
   const threads = hits.filter((i) => i.type === 'question').slice(0, 3)
   const topics = [...new Set(hits.map((i) => i.topic))].slice(0, 3)
 
-  const go = (fn) => { fn(); setOpen(false) }
+  const go = (fn: () => void) => { fn(); setOpen(false) }
 
   return (
     <>

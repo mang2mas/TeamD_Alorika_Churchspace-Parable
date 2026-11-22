@@ -1,7 +1,8 @@
-// Replace with Supabase queries — see README "Supabase Integration Notes".
-export const TOPICS = ['Doubt', 'Prayer', 'Relationships', 'Anxiety', 'Sunday Recap']
+// Phase 0 seed data. Phase 1 replaces this with Supabase queries (see docs/ROADMAP.md).
+import type { AiTakeaway, FeedItem, Media, Question, Topic } from './types'
+export { TOPICS } from './types'
 
-export const AI_TAKEAWAYS = {
+export const AI_TAKEAWAYS: Record<Topic, AiTakeaway> = {
   Doubt: { verse: 'Habakkuk 3:17–18', takeaway: "Faith isn't ignoring silence; it's trusting God's character before the breakthrough." },
   Prayer: { verse: 'Matthew 6:6–8', takeaway: 'Sunday’s lecture: prayer is not performance. God listens to the quiet room more than the polished words.' },
   Relationships: { verse: 'Proverbs 18:24', takeaway: 'Real community is measured by who stays, not by how many invite you. Be the friend you are looking for.' },
@@ -9,7 +10,7 @@ export const AI_TAKEAWAYS = {
   'Sunday Recap': { verse: 'James 1:22', takeaway: 'A sermon only becomes real when one small thing changes by Monday. Pick one and write it down.' },
 }
 
-export const seedQuestions = [
+export const seedQuestions: Question[] = [
   {
     id: 'q1', type: 'question', author: 'Anonymous Youth', church: 'Cabuyao', status: 'unanswered', time: '21h ago',
     title: 'Why does God feel silent when I pray the hardest?',
@@ -46,7 +47,7 @@ export const seedQuestions = [
   },
 ]
 
-export const seedMedia = [
+export const seedMedia: Media[] = [
   {
     id: 'm1', type: 'media', kind: 'article', meta: '4 min read', topic: 'Anxiety',
     title: 'Trusting God When the Budget Is Tight', creator: 'Parable Editorial',
@@ -74,4 +75,7 @@ export const seedMedia = [
 ]
 
 // Interleave so the first screen shows both card styles.
-export const initialItems = seedQuestions.flatMap((q, i) => [q, seedMedia[i]])
+export const initialItems: FeedItem[] = seedQuestions.flatMap((q, i) => {
+  const m = seedMedia[i]
+  return m ? [q, m] : [q]
+})

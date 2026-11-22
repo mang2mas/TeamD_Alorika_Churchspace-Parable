@@ -1,8 +1,20 @@
 import { Moon, Plus, Search, Sun } from 'lucide-react'
+import type { Theme } from '@/shared/lib/theme'
 
-const MODULES = ['Sanctuary', 'Mentorship', 'Outreach']
+export const MODULES = ['Sanctuary', 'Mentorship', 'Outreach'] as const
+export type Module = (typeof MODULES)[number]
 
-export default function Navbar({ module, setModule, search, setSearch, onCompose, theme, onToggleTheme }) {
+interface Props {
+  module: Module
+  setModule: (m: Module) => void
+  search: string
+  setSearch: (q: string) => void
+  onCompose: () => void
+  theme: Theme
+  onToggleTheme: () => void
+}
+
+export default function Navbar({ module, setModule, search, setSearch, onCompose, theme, onToggleTheme }: Props) {
   return (
     <header className="sticky top-0 z-30 bg-canvas/85 backdrop-blur-md border-b border-line">
       <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-2">

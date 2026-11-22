@@ -1,60 +1,52 @@
 import { useMemo, useState } from 'react'
-import Navbar from './components/Navbar.jsx'
-import MasonryFeed from './components/MasonryFeed.jsx'
-import ReaderModal from './components/ReaderModal.jsx'
-import ComposerModal from './components/ComposerModal.jsx'
-import DogRouterWidget from './components/DogRouterWidget.jsx'
-import FeaturePlaceholder from './components/FeaturePlaceholder.jsx'
-import { initialItems, AI_TAKEAWAYS, seedMedia } from './data/seedData.js'
-import { matches } from './utils/search.js'
-import { useTheme } from './utils/theme.js'
-
-export const FILTERS = ['All', 'Freedom Wall Q&A', 'Articles & Reels', 'Unanswered', 'Doubt', 'Prayer', 'Relationships', 'Anxiety', 'Sunday Recap']
-
-function passesFilter(item, f) {
-  if (f === 'All') return true
-  if (f === 'Freedom Wall Q&A') return item.type === 'question'
-  if (f === 'Articles & Reels') return item.type === 'media'
-  if (f === 'Unanswered') return item.type === 'question' && item.status === 'unanswered'
-  return item.topic === f
-}
+import Navbar, { type Module } from '@/shell/Navbar'
+import FeaturePlaceholder from '@/shell/FeaturePlaceholder'
+import MasonryFeed from '@/features/forum/components/MasonryFeed'
+import ReaderModal from '@/features/forum/components/ReaderModal'
+import ComposerModal from '@/features/forum/components/ComposerModal'
+import DogRouterWidget from '@/features/forum/components/DogRouterWidget'
+import { initialItems, AI_TAKEAWAYS, seedMedia } from '@/features/forum/model/seedData'
+import { FILTERS, passesFilter, type Filter } from '@/features/forum/model/filters'
+import { matches } from '@/features/forum/model/search'
+import type { FeedItem, Media, NewPost, Question } from '@/features/forum/model/types'
+import { useTheme } from '@/shared/lib/theme'
 
 export default function App() {
   const [theme, toggleTheme] = useTheme()
-  const [module, setModule] = useState('Sanctuary')
-  const [items, setItems] = useState(initialItems)
-  const [filter, setFilter] = useState('All')
+  const [module, setModule] = useState<Module>('Sanctuary')
+  const [items, setItems] = useState<FeedItem[]>(initialItems)
+  const [filter, setFilter] = useState<Filter>('All')
   const [search, setSearch] = useState('')
-  const [openId, setOpenId] = useState(null)
+  const [openId, setOpenId] = useState<string | null>(null)
   const [composer, setComposer] = useState(false)
   const [toast, setToast] = useState('')
 
-  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2200) }
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 2200) }
   const visible = useMemo(() => items.filter((i) => passesFilter(i, filter) && matches(i, search)), [items, filter, search])
   const openItem = items.find((i) => i.id === openId)
 
-  const toggleHelpful = (id) =>
-    setItems((xs) => xs.map((x) => (x.id === id ? { ...x, helped: !x.helped, helpful: x.helpful + (x.helped ? -1 : 1) } : x)))
+  const toggleHelpful = (id: string) =>
+    setItems((xs) => xs.map((x) => (x.id === id && x.type === 'question' ? { ...x, helped: !x.helped, helpful: x.helpful + (x.helped ? -1 : 1) } : x)))
 
-  const addReply = (id, text) =>
-    setItems((xs) => xs.map((x) => x.id === id
+  const addReply = (id: string, text: string) =>
+    setItems((xs) => xs.map((x) => x.id === id && x.type === 'question'
       ? { ...x, status: 'answered', comments: [...x.comments, { id: 'c' + Date.now(), author: 'Kiko Mendoza', text, time: 'Just now' }] }
       : x))
 
-  const publish = ({ title, body, topic, anonymous }) => {
-    const post = {
+  const publish = ({ title, body, topic, anonymous }: NewPost) => {
+    const post: Question = {
       id: 'q' + Date.now(), type: 'question', author: anonymous ? 'Anonymous Youth' : 'Kiko Mendoza', church: 'Calamba',
       status: 'unanswered', time: 'Just now', title, body, topic, ai: AI_TAKEAWAYS[topic], helpful: 0, helped: false, comments: [],
     }
     setItems((xs) => [post, ...xs]); setFilter('All'); setSearch(''); setComposer(false); showToast('Posted to the Freedom Wall')
   }
 
-  const share = async (item) => {
+  const share = async (item: FeedItem) => {
     try { await navigator.clipboard.writeText(`${location.origin}/#${item.id}`) } catch { /* clipboard may be blocked */ }
     showToast('Link copied to share')
   }
 
-  const media = items.filter((i) => i.type === 'media')
+  const media = items.filter((i): i is Media => i.type === 'media')
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -71,14 +63,14 @@ export default function App() {
               ))}
             </div>
           </div>
-          <MasonryFeed items={visible} onOpen={setOpenId} onHelpful={toggleHelpful} onShare={share} />
+          <MasonryFeed items={visible} onOpen={setOpenId} onHelpful={toggleHelpful} onShare={(m) => void share(m)} />
         </>
       ) : (
         <FeaturePlaceholder name={module} onBack={() => setModule('Sanctuary')} />
       )}
       {openItem && (
         <ReaderModal item={openItem} media={media.length ? media : seedMedia} onClose={() => setOpenId(null)}
-          onReply={addReply} onHelpful={toggleHelpful} onShare={share} onOpen={setOpenId} />
+          onReply={addReply} onHelpful={toggleHelpful} onShare={(m) => void share(m)} onOpen={setOpenId} />
       )}
       {composer && <ComposerModal onClose={() => setComposer(false)} onPublish={publish} />}
       <DogRouterWidget items={items} onFilter={(f) => { setModule('Sanctuary'); setFilter(f) }} onOpen={(id) => { setModule('Sanctuary'); setOpenId(id) }} />

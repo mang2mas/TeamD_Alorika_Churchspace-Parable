@@ -1,11 +1,17 @@
 import { Hammer } from 'lucide-react'
+import type { Module } from './Navbar'
 
-const COPY = {
+const COPY: Record<Exclude<Module, 'Sanctuary'>, string> = {
   Mentorship: 'Match with an older believer for one-on-one guidance.',
   Outreach: 'Organize service days and invite your community.',
 }
 
-export default function FeaturePlaceholder({ name, onBack }) {
+interface Props {
+  name: Exclude<Module, 'Sanctuary'>
+  onBack: () => void
+}
+
+export default function FeaturePlaceholder({ name, onBack }: Props) {
   return (
     <div className="max-w-md mx-auto px-4 py-28 text-center">
       <Hammer className="mx-auto mb-4 text-warn" />

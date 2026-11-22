@@ -1,10 +1,15 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
-import { TOPICS } from '../data/seedData.js'
+import { TOPICS, isTopic, type NewPost } from '../model/types'
 
-export default function ComposerModal({ onClose, onPublish }) {
-  const [f, setF] = useState({ title: '', body: '', topic: 'Doubt', anonymous: true })
-  const set = (k, v) => setF((s) => ({ ...s, [k]: v }))
+interface Props {
+  onClose: () => void
+  onPublish: (post: NewPost) => void
+}
+
+export default function ComposerModal({ onClose, onPublish }: Props) {
+  const [f, setF] = useState<NewPost>({ title: '', body: '', topic: 'Doubt', anonymous: true })
+  const set = <K extends keyof NewPost>(k: K, v: NewPost[K]) => setF((s) => ({ ...s, [k]: v }))
   const ok = f.title.trim() && f.body.trim()
   const field = 'w-full rounded-xl bg-fg/5 border border-line px-4 py-2.5 text-sm placeholder:text-sage/60 focus:outline-hidden focus:border-emerald'
 
@@ -19,7 +24,7 @@ export default function ComposerModal({ onClose, onPublish }) {
           <label className="text-sm">Title<input className={`${field} mt-1`} value={f.title} onChange={(e) => set('title', e.target.value)} placeholder="What is on your heart?" /></label>
           <label className="text-sm">Your question or thought<textarea rows={4} className={`${field} mt-1 resize-none`} value={f.body} onChange={(e) => set('body', e.target.value)} placeholder="Share as much or as little as you like." /></label>
           <label className="text-sm">Topic
-            <select className={`${field} mt-1`} value={f.topic} onChange={(e) => set('topic', e.target.value)}>
+            <select className={`${field} mt-1`} value={f.topic} onChange={(e) => { if (isTopic(e.target.value)) set('topic', e.target.value) }}>
               {TOPICS.map((t) => <option key={t} value={t} className="bg-card">{t}</option>)}
             </select>
           </label>

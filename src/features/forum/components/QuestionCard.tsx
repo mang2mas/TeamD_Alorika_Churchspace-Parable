@@ -1,6 +1,7 @@
 import { MessageCircle, ThumbsUp } from 'lucide-react'
+import type { AiTakeaway, Question } from '../model/types'
 
-export function AiPill({ ai, large = false }) {
+export function AiPill({ ai, large = false }: { ai?: AiTakeaway; large?: boolean }) {
   if (!ai) return null
   return large ? (
     <blockquote className="rounded-xl border-l-4 border-amber bg-aibg px-5 py-4">
@@ -14,7 +15,13 @@ export function AiPill({ ai, large = false }) {
   )
 }
 
-export default function QuestionCard({ q, onOpen, onHelpful }) {
+interface Props {
+  q: Question
+  onOpen: (id: string) => void
+  onHelpful: (id: string) => void
+}
+
+export default function QuestionCard({ q, onOpen, onHelpful }: Props) {
   const open = () => onOpen(q.id)
   return (
     <article onClick={open} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && open()}

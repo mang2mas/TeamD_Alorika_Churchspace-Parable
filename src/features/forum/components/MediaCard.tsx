@@ -1,16 +1,21 @@
 import { Share2 } from 'lucide-react'
+import { badge } from '../model/media'
+import type { Media } from '../model/types'
 
-export const KIND = { article: 'Article', reel: 'Reel', podcast: 'Podcast' }
-export const badge = (m) => `${KIND[m.kind]} • ${m.meta}`
-
-export function Cover({ m, className = '' }) {
+export function Cover({ m, className = '' }: { m: Media; className?: string }) {
   return (
     <img src={m.cover} alt="" loading="lazy" className={`w-full object-cover bg-card ${className}`}
       onError={(e) => { e.currentTarget.style.visibility = 'hidden' }} />
   )
 }
 
-export default function MediaCard({ m, onOpen, onShare }) {
+interface Props {
+  m: Media
+  onOpen: (id: string) => void
+  onShare: (m: Media) => void
+}
+
+export default function MediaCard({ m, onOpen, onShare }: Props) {
   const open = () => onOpen(m.id)
   return (
     <article onClick={open} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && open()}

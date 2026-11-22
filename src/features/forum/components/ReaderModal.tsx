@@ -1,14 +1,25 @@
 import { useEffect, useState } from 'react'
 import { X, Send, Share2, ThumbsUp, Play } from 'lucide-react'
-import { AiPill } from './QuestionCard.jsx'
-import { Cover, badge } from './MediaCard.jsx'
+import { AiPill } from './QuestionCard'
+import { Cover } from './MediaCard'
+import { badge } from '../model/media'
+import type { FeedItem, Media } from '../model/types'
 
-export default function ReaderModal({ item, media, onClose, onReply, onHelpful, onShare, onOpen }) {
+interface Props {
+  item: FeedItem
+  media: Media[]
+  onClose: () => void
+  onReply: (id: string, text: string) => void
+  onHelpful: (id: string) => void
+  onShare: (m: Media) => void
+  onOpen: (id: string) => void
+}
+
+export default function ReaderModal({ item, media, onClose, onReply, onHelpful, onShare, onOpen }: Props) {
   const [text, setText] = useState('')
-  const isQ = item.type === 'question'
 
   useEffect(() => {
-    const on = (e) => e.key === 'Escape' && onClose()
+    const on = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', on)
     return () => window.removeEventListener('keydown', on)
   }, [onClose])
@@ -25,7 +36,7 @@ export default function ReaderModal({ item, media, onClose, onReply, onHelpful, 
         className="pop relative max-w-2xl mx-auto my-6 sm:my-10 rounded-2xl bg-card border border-line shadow-card overflow-hidden">
         <button onClick={onClose} aria-label="Close" className="absolute top-4 right-4 z-10 grid place-items-center h-9 w-9 rounded-full bg-black/50 hover:bg-black/70 text-white"><X size={18} /></button>
 
-        {isQ ? (
+        {item.type === 'question' ? (
           <section className="p-8 pb-6 flex flex-col gap-5">
             <p className="text-xs text-sage pr-10">{item.author} • {item.church} • {item.time}</p>
             <h2 className="font-serif text-3xl font-semibold leading-tight text-fg">{item.title}</h2>
@@ -52,7 +63,7 @@ export default function ReaderModal({ item, media, onClose, onReply, onHelpful, 
           </section>
         )}
 
-        {isQ && (
+        {item.type === 'question' && (
           <section className="px-8 py-6 border-t border-line">
             <h3 className="font-serif text-lg text-fg mb-4">{item.comments.length} {item.comments.length === 1 ? 'response' : 'responses'}</h3>
             <ul className="flex flex-col gap-4">
