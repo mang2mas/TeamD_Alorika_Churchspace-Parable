@@ -1,0 +1,5 @@
+# Normalize line endings so Prettier checks behave the same on Windows, macOS and CI.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.woff2 binary
