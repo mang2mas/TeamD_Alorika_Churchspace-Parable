@@ -18,7 +18,7 @@ export default function QuestionCard({ q, onOpen, onHelpful }) {
   const open = () => onOpen(q.id)
   return (
     <article onClick={open} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && open()}
-      className="cursor-pointer rounded-2xl bg-card border border-line shadow-card p-6 flex flex-col gap-4 hover:border-emerald/40 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald">
+      className="cursor-pointer rounded-2xl bg-card border border-line shadow-card p-6 flex flex-col gap-4 hover:border-emerald/40 transition-colors focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-emerald">
       <div className="flex items-start justify-between gap-3 text-xs text-sage">
         <span>{q.author} • {q.church}</span>
         <span className={`shrink-0 rounded-full px-2.5 py-0.5 border ${q.status === 'answered' ? 'text-accent border-emerald/40 bg-emerald/10' : 'text-warn border-amber/40 bg-amber/10'}`}>

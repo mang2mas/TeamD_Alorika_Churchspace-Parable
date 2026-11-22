@@ -6,10 +6,10 @@ export default function ComposerModal({ onClose, onPublish }) {
   const [f, setF] = useState({ title: '', body: '', topic: 'Doubt', anonymous: true })
   const set = (k, v) => setF((s) => ({ ...s, [k]: v }))
   const ok = f.title.trim() && f.body.trim()
-  const field = 'w-full rounded-xl bg-fg/5 border border-line px-4 py-2.5 text-sm placeholder:text-sage/60 focus:outline-none focus:border-emerald'
+  const field = 'w-full rounded-xl bg-fg/5 border border-line px-4 py-2.5 text-sm placeholder:text-sage/60 focus:outline-hidden focus:border-emerald'
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm grid place-items-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs grid place-items-center p-4" onClick={onClose}>
       <div role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()} className="pop w-full max-w-lg rounded-2xl bg-card border border-line shadow-card p-7">
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-serif text-2xl font-semibold text-fg">Ask or share</h2>

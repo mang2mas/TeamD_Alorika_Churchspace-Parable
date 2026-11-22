@@ -1,45 +1,112 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,500;0,600;1,400&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Self-hosted fonts (no render-blocking Google Fonts request). Weights match what the UI uses. */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/lora/500.css';
+@import '@fontsource/lora/600.css';
+@import '@fontsource/lora/400-italic.css';
+@import 'tailwindcss';
+
+/*
+  Design tokens. `inline` makes utilities reference the per-theme variables below directly,
+  so `bg-canvas`, `text-fg/70`, etc. follow [data-theme] wherever it is set.
+*/
+@theme inline {
+  --font-serif: Lora, serif;
+  --font-sans: Inter, sans-serif;
+
+  --color-emerald: #10b981;
+  --color-amber: #f59e0b;
+
+  --color-canvas: rgb(var(--canvas));
+  --color-card: rgb(var(--card));
+  --color-fg: rgb(var(--fg));
+  --color-sage: rgb(var(--sage));
+  --color-accent: rgb(var(--accent));
+  --color-warn: rgb(var(--warn));
+  --color-aitext: rgb(var(--aitext));
+  --color-aiverse: rgb(var(--aiverse));
+  --color-line: var(--border);
+  --color-sunk: var(--sunk);
+  --color-aibg: var(--aibg);
+  --color-aiborder: var(--aiborder);
+
+  --shadow-card: var(--card-shadow);
+}
+
+/*
+  Tailwind v4 changed the default border color to `currentcolor`. Keep the v3 default so the UI
+  looks identical; remove once every bordered element sets an explicit color.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 /* Theme tokens: light ("Warm Editorial") is the default; dark ("Deep Sanctuary") via [data-theme="dark"] or .dark */
 :root {
   color-scheme: light;
-  --canvas: 250 248 245;   /* #FAF8F5 */
+  --canvas: 250 248 245; /* #FAF8F5 */
   --card: 255 255 255;
-  --fg: 18 38 35;          /* #122623 */
-  --sage: 82 102 99;       /* #526663 */
-  --accent: 15 81 67;      /* #0F5143 */
+  --fg: 18 38 35; /* #122623 */
+  --sage: 82 102 99; /* #526663 */
+  --accent: 15 81 67; /* #0F5143 */
   --warn: 146 96 14;
-  --aitext: 120 75 11;     /* #784B0B */
+  --aitext: 120 75 11; /* #784B0B */
   --aiverse: 15 81 67;
-  --aibg: #FEF6E6;
-  --aiborder: #F2E2BD;
-  --border: #E6E1D8;
-  --sunk: #F5F2EC;
-  --shadow-card: 0 1px 2px rgba(18, 38, 35, .05), 0 6px 20px rgba(18, 38, 35, .06);
+  --aibg: #fef6e6;
+  --aiborder: #f2e2bd;
+  --border: #e6e1d8;
+  --sunk: #f5f2ec;
+  --card-shadow: 0 1px 2px rgba(18, 38, 35, 0.05), 0 6px 20px rgba(18, 38, 35, 0.06);
 }
-[data-theme="dark"], .dark {
+[data-theme='dark'],
+.dark {
   color-scheme: dark;
-  --canvas: 7 25 23;       /* #071917 */
-  --card: 13 38 35;        /* #0d2623 */
+  --canvas: 7 25 23; /* #071917 */
+  --card: 13 38 35; /* #0d2623 */
   --fg: 255 255 255;
   --sage: 166 178 176;
   --accent: 16 185 129;
   --warn: 245 158 11;
   --aitext: 245 158 11;
   --aiverse: 245 158 11;
-  --aibg: rgba(245, 158, 11, .1);
-  --aiborder: rgba(245, 158, 11, .2);
-  --border: rgba(255, 255, 255, .1);
-  --sunk: rgba(0, 0, 0, .2);
-  --shadow-card: none;
+  --aibg: rgba(245, 158, 11, 0.1);
+  --aiborder: rgba(245, 158, 11, 0.2);
+  --border: rgba(255, 255, 255, 0.1);
+  --sunk: rgba(0, 0, 0, 0.2);
+  --card-shadow: none;
 }
 
-body { @apply bg-canvas text-fg/90 font-sans antialiased; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { scrollbar-width: none; }
-@keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
-.pop { animation: pop .18s ease-out; }
-@media (prefers-reduced-motion: reduce) { .pop { animation: none; } }
+body {
+  @apply bg-canvas text-fg/90 font-sans antialiased;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.pop {
+  animation: pop 0.18s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pop {
+    animation: none;
+  }
+}

@@ -20,7 +20,7 @@ export default function ReaderModal({ item, media, onClose, onReply, onHelpful, 
   const submit = () => { if (!text.trim()) return; onReply(item.id, text.trim()); setText('') }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm overflow-y-auto" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs overflow-y-auto" onClick={onClose}>
       <div role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}
         className="pop relative max-w-2xl mx-auto my-6 sm:my-10 rounded-2xl bg-card border border-line shadow-card overflow-hidden">
         <button onClick={onClose} aria-label="Close" className="absolute top-4 right-4 z-10 grid place-items-center h-9 w-9 rounded-full bg-black/50 hover:bg-black/70 text-white"><X size={18} /></button>
@@ -66,7 +66,7 @@ export default function ReaderModal({ item, media, onClose, onReply, onHelpful, 
             </ul>
             <div className="mt-5 flex gap-2">
               <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()}
-                placeholder="Write an encouraging response..." className="flex-1 rounded-full bg-fg/5 border border-line px-4 py-2 text-sm placeholder:text-sage/60 focus:outline-none focus:border-emerald" />
+                placeholder="Write an encouraging response..." className="flex-1 rounded-full bg-fg/5 border border-line px-4 py-2 text-sm placeholder:text-sage/60 focus:outline-hidden focus:border-emerald" />
               <button onClick={submit} aria-label="Send response" className="grid place-items-center h-10 w-10 rounded-full bg-emerald text-[#071917]"><Send size={16} /></button>
             </div>
           </section>

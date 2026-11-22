@@ -35,7 +35,7 @@ export default function DogRouterWidget({ items, onFilter, onOpen }) {
           </div>
           <div className="p-4 flex flex-col gap-4 max-h-[60vh] overflow-y-auto">
             <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Try: finances, worship, friends, doubt..."
-              className="w-full rounded-full bg-fg/5 border border-line px-4 py-2 text-sm placeholder:text-sage/60 focus:outline-none focus:border-emerald" />
+              className="w-full rounded-full bg-fg/5 border border-line px-4 py-2 text-sm placeholder:text-sage/60 focus:outline-hidden focus:border-emerald" />
             {!q.trim() && <p className="text-sm text-sage">Type a concern and I will point you to the right questions and threads.</p>}
             {q.trim() && !hits.length && <p className="text-sm text-sage">No matches yet. Try a simpler word, or post your question.</p>}
             {topics.length > 0 && (
