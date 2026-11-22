@@ -2,7 +2,8 @@
 export const TOPICS = ['Doubt', 'Prayer', 'Relationships', 'Anxiety', 'Sunday Recap'] as const
 export type Topic = (typeof TOPICS)[number]
 
-export const isTopic = (value: string): value is Topic => (TOPICS as readonly string[]).includes(value)
+export const isTopic = (value: string): value is Topic =>
+  (TOPICS as readonly string[]).includes(value)
 
 export interface AiTakeaway {
   verse: string

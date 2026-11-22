@@ -46,13 +46,13 @@ parable/
 
 Type these into the **Top Search Bar** (filters the grid live) and into **Ask Bark** (suggests FAQs and threads). Synonyms are expanded in `src/utils/search.js`.
 
-| Keyword | Matching feed items | Bark FAQ pill | Bark thread |
-|---|---|---|---|
-| `finances` | Q: "How do I stop panicking about tuition and family finances?", Article: "Trusting God When the Budget Is Tight" | How do I handle money stress? | Tuition and family finances (Santa Rosa) |
-| `worship` | Q: "My worship feels empty lately...", Reel: "Worship Is Not a Performance" | What if worship feels empty? | Worship feels empty (San Pedro) |
-| `friends` | Q: "My barkada stopped inviting me...", Podcast: "Finding Real Friends in a Lonely Season" | How do I keep friends and my faith? | Barkada thread (Calamba) |
-| `doubt` | Q: "Why does God feel silent...", Article: "Honest Doubt Is Not the Opposite of Faith" | Is it okay to doubt God? | God feels silent (Cabuyao) |
-| `anxious` | Same results as `finances` (matches the Anxiety topic) | How do I handle money stress? | Tuition and family finances |
+| Keyword    | Matching feed items                                                                                               | Bark FAQ pill                       | Bark thread                              |
+| ---------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ---------------------------------------- |
+| `finances` | Q: "How do I stop panicking about tuition and family finances?", Article: "Trusting God When the Budget Is Tight" | How do I handle money stress?       | Tuition and family finances (Santa Rosa) |
+| `worship`  | Q: "My worship feels empty lately...", Reel: "Worship Is Not a Performance"                                       | What if worship feels empty?        | Worship feels empty (San Pedro)          |
+| `friends`  | Q: "My barkada stopped inviting me...", Podcast: "Finding Real Friends in a Lonely Season"                        | How do I keep friends and my faith? | Barkada thread (Calamba)                 |
+| `doubt`    | Q: "Why does God feel silent...", Article: "Honest Doubt Is Not the Opposite of Faith"                            | Is it okay to doubt God?            | God feels silent (Cabuyao)               |
+| `anxious`  | Same results as `finances` (matches the Anxiety topic)                                                            | How do I handle money stress?       | Tuition and family finances              |
 
 Pitch flow: search `finances` → clear → open Ask Bark, type `worship` → click the thread → reply in the Reader → click **+ Ask / Post** and publish a new question.
 
