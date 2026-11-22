@@ -1,65 +1,68 @@
-# Parable
+# ChurchSpace (Parable)
 
-A youth faith-community sanctuary: anonymous Q&A (Freedom Wall), curated media, and an assistive topic router. Built as a pitch-ready MVP.
+A workspace for local churches, youth and their communities in Laguna, Philippines: anonymous faith
+questions, daily verses and streaks, prayer requests, and an outreach finder. It started as our
+HackLaguna prototype and is now being built into a real product.
 
-## 1. Quick Start
+> **Status:** Phase 0 is done (typed, linted, tested base). The app still runs on seed data: no
+> backend, no real accounts yet. See [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Quick start
+
+Requires Node 24 (see `.nvmrc`; Node 22.12+ works).
 
 ```bash
 npm install
-cp .env.example .env   # optional: the demo runs fully on seed data
-npm run dev
+npm run dev          # http://localhost:5173
 ```
 
-Open the URL Vite prints (default http://localhost:5173).
+No environment variables are needed yet. `.env.example` lists the Supabase values that Phase 1
+will use; copy it to `.env.local` then.
 
-## 2. Architecture Summary
+## Scripts
+
+| Command             | What it does                                                       |
+| ------------------- | ------------------------------------------------------------------ |
+| `npm run dev`       | Start the dev server                                               |
+| `npm run build`     | Production build to `dist/`                                        |
+| `npm run preview`   | Serve the production build                                         |
+| `npm run lint`      | ESLint (TypeScript, React hooks, accessibility)                    |
+| `npm run format`    | Format everything with Prettier (`format:check` only checks)       |
+| `npm run typecheck` | TypeScript, strict mode                                            |
+| `npm test`          | Unit and component tests (Vitest); `test:watch` for watch mode     |
+| `npm run e2e`       | End-to-end and accessibility tests (Playwright, against the build) |
+| `npm run size`      | Bundle size budget (run after `build`)                             |
+| `npm run check`     | Everything CI runs except e2e. Run this before calling work done.  |
+
+First time running e2e tests: `npx playwright install chromium`.
+
+## Project layout
 
 ```
-parable/
-├── index.html
-├── tailwind.config.js        # Deep Sanctuary colors, Lora/Inter fonts
-├── .env.example
-└── src/
-    ├── main.jsx
-    ├── index.css             # Google Fonts import + Tailwind
-    ├── App.jsx               # State: items, filter, search, modals, toast
-    ├── data/seedData.js      # 4 questions + 4 media items + AI takeaways
-    ├── utils/search.js       # Keyword + synonym matching, FAQ labels
-    └── components/
-        ├── Navbar.jsx            # Glass header, module switcher, search, Ask / Post
-        ├── MasonryFeed.jsx       # Round-robin 1/2/3 flex columns
-        ├── QuestionCard.jsx      # Typographic card + AI pill
-        ├── MediaCard.jsx         # Cover card, badge, hover Share
-        ├── ReaderModal.jsx       # Substack-style reader, replies, Continue Exploring
-        ├── ComposerModal.jsx     # Publish new question with auto AI takeaway
-        ├── DogRouterWidget.jsx   # "Ask Bark" assistive router
-        └── FeaturePlaceholder.jsx# Shared "coming soon" for Mentorship & Outreach
+src/
+  app/              entry (main.tsx) and the App component
+  shell/            app chrome: Navbar, module list, placeholders
+  features/forum/   components/ (UI) and model/ (types, seed data, pure logic + tests)
+  shared/lib/       cross-feature code (theme)
+  styles/           Tailwind v4 tokens and global CSS
+  test/             Vitest setup
+e2e/                Playwright specs
+docs/               architecture, safety and privacy, roadmap
 ```
 
-**Feature 1 (Sanctuary)** is fully wired: `App.jsx` owns all state and passes handlers down. Filters and search produce `visible`, which `MasonryFeed` splits across columns. Clicking a card sets `openId`, which opens `ReaderModal`. The composer prepends a new post with a topic-matched AI takeaway. The Bark router filters the feed or opens threads directly.
+Each future app (Daily Word, Prayer, Outreach, Profile, Settings) gets its own `features/<app>`
+folder with the same `components/` + `model/` split.
 
-**Features 2 & 3 (Mentorship, Outreach)** both render the single `FeaturePlaceholder` component, chosen by the module switcher in the header.
+## Docs
 
-**Theming:** `src/index.css` defines CSS custom properties (`--canvas`, `--card`, `--fg`, `--sage`, ...). `:root` holds the light "Warm Editorial" palette (default); `[data-theme="dark"]` holds "Deep Sanctuary". Tailwind colors in `tailwind.config.js` read these variables. `src/utils/theme.js` stores the choice in `localStorage` (`parable-theme`), and a small script in `index.html` applies it before first paint.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): audit of the prototype, production stack, data
+  model, RLS approach
+- [docs/SAFETY_AND_PRIVACY.md](docs/SAFETY_AND_PRIVACY.md): moderation, crisis flow, RA 10173
+  privacy, roles, church verification, accessibility, notifications
+- [docs/ROADMAP.md](docs/ROADMAP.md): phases 0–6 with "done" checklists and required keys
+- [CLAUDE.md](CLAUDE.md): working rules for contributors and AI assistants
 
-## 3. Live Demo & Query Cheat Sheet
+## Demo flow (seed data)
 
-Type these into the **Top Search Bar** (filters the grid live) and into **Ask Bark** (suggests FAQs and threads). Synonyms are expanded in `src/utils/search.js`.
-
-| Keyword    | Matching feed items                                                                                               | Bark FAQ pill                       | Bark thread                              |
-| ---------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ---------------------------------------- |
-| `finances` | Q: "How do I stop panicking about tuition and family finances?", Article: "Trusting God When the Budget Is Tight" | How do I handle money stress?       | Tuition and family finances (Santa Rosa) |
-| `worship`  | Q: "My worship feels empty lately...", Reel: "Worship Is Not a Performance"                                       | What if worship feels empty?        | Worship feels empty (San Pedro)          |
-| `friends`  | Q: "My barkada stopped inviting me...", Podcast: "Finding Real Friends in a Lonely Season"                        | How do I keep friends and my faith? | Barkada thread (Calamba)                 |
-| `doubt`    | Q: "Why does God feel silent...", Article: "Honest Doubt Is Not the Opposite of Faith"                            | Is it okay to doubt God?            | God feels silent (Cabuyao)               |
-| `anxious`  | Same results as `finances` (matches the Anxiety topic)                                                            | How do I handle money stress?       | Tuition and family finances              |
-
-Pitch flow: search `finances` → clear → open Ask Bark, type `worship` → click the thread → reply in the Reader → click **+ Ask / Post** and publish a new question.
-
-## 4. Supabase Integration Notes
-
-- **Data:** replace the `initialItems` import in `src/App.jsx` with a `useEffect` that loads from Supabase (`supabase.from('posts').select('*, comments(*)')` and `supabase.from('media').select('*')`). Keep the same field names as `seedData.js`.
-- **Writes:** in `App.jsx`, `publish`, `addReply`, and `toggleHelpful` currently update local state. Make each insert/update into Supabase first, then update state.
-- **Search:** swap `matches()` in `src/utils/search.js` for Postgres full-text search (`textSearch`) or a `pg_trgm` index. Keep the synonym map as a query-expansion step.
-- **AI takeaways:** `AI_TAKEAWAYS` in `seedData.js` simulates the output. Replace with a call to Gemini (`VITE_GEMINI_API_KEY`, ideally via a Supabase Edge Function so the key stays server-side), passing the post title, body, and topic, and storing the returned `{ verse, takeaway }` on the post row.
-- **Auth:** replace the hard-coded "Kiko Mendoza" in `Navbar.jsx` and `App.jsx` with `supabase.auth.getUser()`.
+Search `finances` → clear → open **Ask Bark** (bottom right), type `worship` → open the thread →
+reply in the reader → **+ Ask / Post** and publish a new question.

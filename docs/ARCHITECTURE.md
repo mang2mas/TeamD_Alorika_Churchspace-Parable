@@ -92,7 +92,7 @@ We have the prototype's `package.json`, `tsconfig.json`, `vite.config.ts`, `inde
 | Concern | Choice | Why |
 |---|---|---|
 | Build | **Vite 8 + React 19 + TypeScript 6.0.x (strict)**, not Next.js | Already on Vite. The app is mostly behind login, so server rendering helps little. A static app is the cheapest to host, and offline/PWA support is simpler. Server code is just a few functions (below). *Tradeoff:* public pages (church directory, shared links) don't get server rendering. If directory SEO matters, prerender `/churches/:slug` in Phase 5. |
-| Routing | **React Router v7**, each app a lazy route | Every app is URL-addressable, the Android back button closes sheets, and share links work. Splitting code per app keeps the first load small. |
+| Routing | **React Router v8** (added in Phase 1), each app a lazy route | Every app is URL-addressable, the Android back button closes sheets, and share links work. Splitting code per app keeps the first load small. |
 | Styling | **Tailwind v4**, with the current tokens moved to `@theme` | Migrating 554 lines now is cheap. It would cost more later. |
 | UI primitives | **Radix UI** (Dialog, Switch, Tabs, Popover) inside our own `shared/ui` | Focus traps and ARIA are handled. Unused parts are dropped from the bundle. |
 | Server state | **TanStack Query** + `supabase-js` + generated DB types | Caching, retries, optimistic updates, offline-aware mutations |
