@@ -1,8 +1,14 @@
 [
   {
-    "name": "JS (all chunks, gzip)",
-    "path": "dist/assets/*.js",
+    "name": "Initial JS (shell + store, gzip)",
+    "path": "dist/assets/index-*.js",
     "limit": "150 kB",
+    "gzip": true
+  },
+  {
+    "name": "All lazy chunks (apps, PNG export, gzip)",
+    "path": ["dist/assets/*.js", "!dist/assets/index-*.js"],
+    "limit": "60 kB",
     "gzip": true
   },
   {

@@ -1,35 +1,38 @@
 import { act, renderHook } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { THEME_STORAGE_KEY, useTheme } from './theme'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { THEME_STORAGE_KEY, readTheme, useTheme } from './theme'
 
-describe('useTheme', () => {
-  beforeEach(() => {
-    delete document.documentElement.dataset.theme
-  })
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
+describe('readTheme', () => {
+  afterEach(() => vi.restoreAllMocks())
 
-  it('defaults to light and applies it to <html>', () => {
-    const { result } = renderHook(() => useTheme())
-    expect(result.current[0]).toBe('light')
-    expect(document.documentElement.dataset.theme).toBe('light')
+  it('defaults to light', () => {
+    expect(readTheme()).toBe('light')
   })
 
   it('reads a saved dark theme', () => {
     localStorage.setItem(THEME_STORAGE_KEY, 'dark')
-    const { result } = renderHook(() => useTheme())
-    expect(result.current[0]).toBe('dark')
+    expect(readTheme()).toBe('dark')
   })
 
   it('ignores unknown saved values', () => {
     localStorage.setItem(THEME_STORAGE_KEY, 'purple')
-    const { result } = renderHook(() => useTheme())
-    expect(result.current[0]).toBe('light')
+    expect(readTheme()).toBe('light')
   })
+
+  it('falls back to light when storage is blocked', () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('blocked')
+    })
+    expect(readTheme()).toBe('light')
+  })
+})
+
+describe('useTheme', () => {
+  afterEach(() => vi.restoreAllMocks())
 
   it('toggles, persists, and updates <html>', () => {
     const { result } = renderHook(() => useTheme())
+    expect(result.current[0]).toBe('light')
     act(() => result.current[1]())
     expect(result.current[0]).toBe('dark')
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark')
@@ -38,15 +41,18 @@ describe('useTheme', () => {
     expect(result.current[0]).toBe('light')
   })
 
-  it('still works when localStorage throws (e.g. blocked storage)', () => {
-    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
-      throw new Error('blocked')
-    })
+  it('keeps every theme control in sync', () => {
+    const a = renderHook(() => useTheme())
+    const b = renderHook(() => useTheme())
+    act(() => a.result.current[1]())
+    expect(b.result.current[0]).toBe('dark')
+  })
+
+  it('still toggles when storage is blocked', () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('blocked')
     })
     const { result } = renderHook(() => useTheme())
-    expect(result.current[0]).toBe('light')
     act(() => result.current[1]())
     expect(result.current[0]).toBe('dark')
   })

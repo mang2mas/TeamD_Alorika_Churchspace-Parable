@@ -10,7 +10,7 @@ describe('passesFilter', () => {
   })
 
   it('"Freedom Wall Q&A" keeps only questions', () => {
-    expect(ids('Freedom Wall Q&A')).toEqual(['q1', 'q2', 'q3', 'q4'])
+    expect(ids('Freedom Wall Q&A')).toEqual(['q1', 'q2', 'q3', 'q4', 'q5', 'q6'])
   })
 
   it('"Articles & Reels" keeps only media', () => {
@@ -18,7 +18,7 @@ describe('passesFilter', () => {
   })
 
   it('"Unanswered" keeps only unanswered questions', () => {
-    expect(ids('Unanswered')).toEqual(['q1', 'q3'])
+    expect(ids('Unanswered')).toEqual(['q1', 'q3', 'q5'])
   })
 
   it('a topic filter keeps questions and media of that topic', () => {

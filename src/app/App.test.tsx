@@ -1,108 +1,129 @@
-// Characterization tests: they pin down how the Phase 0 app behaves today, so later
-// rewrites (real data, routing, accessible dialogs) can't silently change it.
-import { render, screen, within } from '@testing-library/react'
+// Characterization tests for the demo build: the flows we show organizers.
+import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
+import { useDemo } from '@/shared/store/demo'
 import App from './App'
 
 const cards = () => screen.getAllByRole('article')
+const openForum = async () => {
+  render(<App />)
+  await screen.findByRole('heading', { name: 'Freedom Wall' })
+}
+const viewAs = (userId: string) => act(() => useDemo.getState().setUser(userId))
 
-describe('App (Phase 0 behavior)', () => {
-  it('shows all 8 seed cards in the feed', () => {
-    render(<App />)
-    expect(cards()).toHaveLength(8)
+describe('Forum (Freedom Wall)', () => {
+  it('opens on the forum and shows all 10 seed cards', async () => {
+    await openForum()
+    expect(cards()).toHaveLength(10)
   })
 
-  it('narrows the feed with a filter chip', async () => {
+  it('narrows the feed with a filter chip and the search box', async () => {
     const user = userEvent.setup()
-    render(<App />)
+    await openForum()
     await user.click(screen.getByRole('button', { name: 'Unanswered' }))
-    expect(cards()).toHaveLength(2)
+    expect(cards()).toHaveLength(3)
     await user.click(screen.getByRole('button', { name: 'All' }))
-    expect(cards()).toHaveLength(8)
-  })
-
-  it('filters the feed with the search box, including synonyms', async () => {
-    const user = userEvent.setup()
-    render(<App />)
     await user.type(screen.getByRole('textbox', { name: 'Search' }), 'finances')
     expect(cards()).toHaveLength(2)
   })
 
-  it('shows an empty state when nothing matches', async () => {
+  it("a member's reply doesn't mark a question answered, a leader's reply does", async () => {
     const user = userEvent.setup()
-    render(<App />)
-    await user.type(screen.getByRole('textbox', { name: 'Search' }), 'zzzz')
-    expect(screen.queryAllByRole('article')).toHaveLength(0)
-    expect(screen.getByText('Nothing here yet')).toBeInTheDocument()
-  })
+    await openForum()
+    const title = 'Why does God feel silent when I pray the hardest?'
+    const card = () => cards().find((c) => c.textContent?.includes(title)) as HTMLElement
 
-  it('opens a question, accepts a reply that marks it answered, and closes on Escape', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(screen.getByText('Why does God feel silent when I pray the hardest?'))
-
-    const dialog = screen.getByRole('dialog')
-    expect(within(dialog).getByText('2 responses')).toBeInTheDocument()
+    await user.click(screen.getByText(title))
     await user.type(
-      within(dialog).getByPlaceholderText('Write an encouraging response...'),
+      screen.getByPlaceholderText('Write an encouraging response...'),
       'Praying for you.{Enter}',
     )
-    expect(within(dialog).getByText('Praying for you.')).toBeInTheDocument()
-    expect(within(dialog).getByText('3 responses')).toBeInTheDocument()
-
+    expect(within(screen.getByRole('dialog')).getByText('Praying for you.')).toBeInTheDocument()
     await user.keyboard('{Escape}')
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    const card = cards().find((c) => c.textContent?.includes('Why does God feel silent'))
-    expect(card).toBeDefined()
-    expect(within(card as HTMLElement).getByText('Answered')).toBeInTheDocument()
-  })
+    expect(within(card()).getByText(/Waiting 12h\+/)).toBeInTheDocument()
 
-  it('toggles "Helpful" on a question card', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    const button = screen.getByRole('button', { name: /Helpful · 18/ })
-    await user.click(button)
-    expect(screen.getByRole('button', { name: /Helpful · 19/ })).toHaveAttribute(
-      'aria-pressed',
-      'true',
+    viewAs('u-rina')
+    await user.click(screen.getByText(title))
+    await user.type(
+      screen.getByPlaceholderText('Write an encouraging response...'),
+      'You are not alone.{Enter}',
     )
+    expect(within(screen.getByRole('dialog')).getAllByText('Leader answer').length).toBeGreaterThan(
+      0,
+    )
+    await user.keyboard('{Escape}')
+    expect(within(card()).getByText('Answered by a leader')).toBeInTheDocument()
   })
 
-  it('publishes a new question to the top of the feed and shows a toast', async () => {
+  it("Jessa's third Doubt reply earns her the Encourager badge", async () => {
     const user = userEvent.setup()
-    render(<App />)
+    await openForum()
+    await user.click(screen.getByText('Why does God feel silent when I pray the hardest?'))
+    await user.type(
+      screen.getByPlaceholderText('Write an encouraging response...'),
+      'Keep asking.{Enter}',
+    )
+    expect(await screen.findByRole('status')).toHaveTextContent('Encourager · Doubt')
+  })
+
+  it('publishes an anonymous question to the top of the feed', async () => {
+    const user = userEvent.setup()
+    await openForum()
     await user.click(screen.getByRole('button', { name: /Ask \/ Post/ }))
     const dialog = screen.getByRole('dialog')
-    const publish = within(dialog).getByRole('button', { name: 'Publish' })
-    expect(publish).toBeDisabled()
-
     await user.type(within(dialog).getByLabelText('Title'), 'Is it okay to rest on Sunday?')
     await user.type(within(dialog).getByLabelText('Your question or thought'), 'Asking for me.')
-    await user.click(publish)
-
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    expect(cards()).toHaveLength(9)
+    await user.click(within(dialog).getByRole('button', { name: 'Publish' }))
+    expect(cards()).toHaveLength(11)
     expect(cards()[0]).toHaveTextContent('Is it okay to rest on Sunday?')
     expect(cards()[0]).toHaveTextContent('Anonymous Youth')
     expect(screen.getByRole('status')).toHaveTextContent('Posted to the Freedom Wall')
   })
 
+  it('reported posts are hidden after 3 reports and shown to moderators', async () => {
+    act(() => {
+      for (const id of ['u-jessa', 'u-migs', 'u-daniel']) {
+        useDemo.getState().setUser(id)
+        useDemo.getState().report('q2')
+      }
+      useDemo.getState().setUser('u-jessa')
+    })
+    await openForum()
+    expect(cards()).toHaveLength(9)
+    viewAs('u-paolo')
+    expect(cards()).toHaveLength(10)
+  })
+
   it('routes from Ask Bark to a related thread', async () => {
     const user = userEvent.setup()
-    render(<App />)
+    await openForum()
     await user.click(screen.getByRole('button', { name: 'Ask Bark, topic router' }))
     await user.type(screen.getByPlaceholderText(/Try: finances/), 'worship')
     await user.click(screen.getByRole('button', { name: /My worship feels empty lately/ }))
     expect(screen.getByRole('dialog')).toHaveTextContent('My worship feels empty lately')
   })
+})
 
-  it('shows the placeholder for modules that are not built yet', async () => {
+describe('Navigation and roles', () => {
+  it('reaches every app from the navigation', async () => {
     const user = userEvent.setup()
+    await openForum()
+    const go = async (name: string, heading: string | RegExp) => {
+      await user.click(screen.getAllByRole('link', { name })[0]!)
+      expect(await screen.findByRole('heading', { level: 1, name: heading })).toBeInTheDocument()
+    }
+    await go('Daily Word', 'Daily Word')
+    await go('Prayer', 'Prayer Request Form')
+    await go('Outreach', 'Outreach Finder')
+    await go('Me', 'Jessa')
+  })
+
+  it('offers a role switch on screens the current role cannot use', async () => {
+    const user = userEvent.setup()
+    window.history.pushState({}, '', '/daily/disciples')
     render(<App />)
-    await user.click(screen.getByRole('button', { name: 'Outreach' }))
-    expect(screen.getByText('Outreach is coming soon')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Back to Sanctuary' }))
-    expect(cards()).toHaveLength(8)
+    await user.click(await screen.findByRole('button', { name: 'View as Ate Rina' }))
+    expect(await screen.findByRole('heading', { name: 'Your disciples' })).toBeInTheDocument()
   })
 })

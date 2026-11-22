@@ -1,8 +1,20 @@
-import { Share2 } from 'lucide-react'
+import { ImageOff, Share2 } from 'lucide-react'
+import { useDemo } from '@/shared/store/demo'
 import { badge } from '../model/media'
 import type { Media } from '../model/types'
 
 export function Cover({ m, className = '' }: { m: Media; className?: string }) {
+  // Data saver (Settings): skip cover downloads on slow or prepaid connections.
+  const dataSaver = useDemo((s) => s.dataSaver)
+  if (dataSaver)
+    return (
+      <div
+        className={`w-full grid place-items-center bg-sunk text-sage text-xs gap-1 ${className}`}
+        aria-hidden="true"
+      >
+        <ImageOff size={18} />
+      </div>
+    )
   return (
     <img
       src={m.cover}

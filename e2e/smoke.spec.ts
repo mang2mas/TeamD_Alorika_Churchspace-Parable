@@ -3,7 +3,7 @@ import { expect, test } from './fixtures'
 test('loads the feed', async ({ page }) => {
   await page.goto('/')
   await expect(page).toHaveTitle(/Parable/)
-  await expect(page.getByRole('article')).toHaveCount(8)
+  await expect(page.getByRole('article')).toHaveCount(10)
 })
 
 test('search narrows the feed using synonyms', async ({ page }) => {

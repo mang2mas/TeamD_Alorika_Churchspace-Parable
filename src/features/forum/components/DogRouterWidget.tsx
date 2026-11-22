@@ -55,7 +55,7 @@ export default function DogRouterWidget({ items, onFilter, onOpen }: Props) {
   return (
     <>
       {open && (
-        <div className="pop fixed bottom-24 right-6 z-40 w-80 sm:w-96 rounded-2xl bg-card border border-line shadow-card overflow-hidden">
+        <div className="pop fixed bottom-40 md:bottom-24 right-4 md:right-6 z-40 w-80 sm:w-96 rounded-2xl bg-card border border-line shadow-card overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-line">
             <p className="font-serif text-fg">Ask Bark</p>
             <button onClick={() => setOpen(false)} aria-label="Close">
@@ -121,7 +121,7 @@ export default function DogRouterWidget({ items, onFilter, onOpen }: Props) {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Ask Bark, topic router"
-        className="group fixed bottom-6 right-6 z-40 grid place-items-center h-14 w-14 rounded-2xl bg-[#0d2623] border border-white/10 shadow-xl hover:border-emerald/60"
+        className="group fixed bottom-24 md:bottom-6 right-4 md:right-6 z-40 grid place-items-center h-14 w-14 rounded-2xl bg-[#0d2623] border border-white/10 shadow-xl hover:border-emerald/60"
       >
         <Wolf />
         <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald border-2 border-canvas" />

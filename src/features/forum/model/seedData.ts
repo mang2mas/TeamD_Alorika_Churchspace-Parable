@@ -1,4 +1,5 @@
-// Phase 0 seed data. Phase 1 replaces this with Supabase queries (see docs/ROADMAP.md).
+// Forum demo data. Timestamps are relative to "now" so the demo always looks current.
+import { DAY, HOUR, isoAgo } from '@/shared/lib/dates'
 import type { AiTakeaway, FeedItem, Media, Question, Topic } from './types'
 export { TOPICS } from './types'
 
@@ -30,95 +31,156 @@ export const AI_TAKEAWAYS: Record<Topic, AiTakeaway> = {
   },
 }
 
-export const seedQuestions: Question[] = [
-  {
-    id: 'q1',
-    type: 'question',
-    author: 'Anonymous Youth',
-    church: 'Cabuyao',
-    status: 'unanswered',
-    time: '21h ago',
-    title: 'Why does God feel silent when I pray the hardest?',
-    body: 'I have been praying every night for two months about my parents. Nothing changes and I feel nothing. Is doubt a sin, or am I just tired?',
-    topic: 'Doubt',
-    ai: AI_TAKEAWAYS.Doubt,
-    helpful: 18,
-    helped: false,
-    comments: [
-      {
-        id: 'c1',
-        author: 'Ate Rina',
-        text: 'Habakkuk wrote this while the fields were empty. Honest questions are still prayers.',
-        time: '10h ago',
-      },
-      {
-        id: 'c2',
-        author: 'Anonymous Youth',
-        text: 'Same here. Thank you for asking this out loud.',
-        time: '6h ago',
-      },
-    ],
-  },
-  {
-    id: 'q2',
-    type: 'question',
-    author: 'Anonymous Youth',
-    church: 'San Pedro',
-    status: 'answered',
-    time: '2d ago',
-    title: 'My worship feels empty lately. Am I faking it?',
-    body: 'I serve on the worship team and I am good at the notes, but my heart is somewhere else. I feel like a performer instead of a believer.',
-    topic: 'Prayer',
-    ai: AI_TAKEAWAYS.Prayer,
-    helpful: 32,
-    helped: false,
-    comments: [
-      {
-        id: 'c3',
-        author: 'Kuya Migs',
-        text: 'Dry seasons are normal. Keep showing up, and sit out one Sunday just to listen.',
-        time: '1d ago',
-      },
-    ],
-  },
-  {
-    id: 'q3',
-    type: 'question',
-    author: 'Jessa',
-    church: 'Calamba',
-    status: 'unanswered',
-    time: '5h ago',
-    title: 'My barkada stopped inviting me after I joined youth group',
-    body: 'We used to hang out every weekend. Now I get left out of the group chat. How do I stay kind without losing my friends or my faith?',
-    topic: 'Relationships',
-    ai: AI_TAKEAWAYS.Relationships,
-    helpful: 9,
-    helped: false,
-    comments: [],
-  },
-  {
-    id: 'q4',
-    type: 'question',
-    author: 'Anonymous Youth',
-    church: 'Santa Rosa',
-    status: 'answered',
-    time: '4d ago',
-    title: 'How do I stop panicking about tuition and family finances?',
-    body: 'My dad’s work hours were cut and I might have to stop school next semester. I cannot sleep, and everyone tells me to just have faith.',
-    topic: 'Anxiety',
-    ai: AI_TAKEAWAYS.Anxiety,
-    helpful: 41,
-    helped: false,
-    comments: [
-      {
-        id: 'c4',
-        author: 'Ate Joy',
-        text: 'Faith and a scholarship search can happen together. Talk to our youth pastor this Sunday.',
-        time: '3d ago',
-      },
-    ],
-  },
-]
+const q = (fields: Omit<Question, 'type' | 'reports' | 'hidden' | 'helped'>): Question => ({
+  type: 'question',
+  reports: [],
+  hidden: false,
+  helped: false,
+  ...fields,
+})
+
+export function createQuestions(now = Date.now()): Question[] {
+  return [
+    q({
+      id: 'q1',
+      author: 'Anonymous Youth',
+      church: 'Cabuyao',
+      status: 'unanswered',
+      createdAt: isoAgo(21 * HOUR, now),
+      title: 'Why does God feel silent when I pray the hardest?',
+      body: 'I have been praying every night for two months about my parents. Nothing changes and I feel nothing. Is doubt a sin, or am I just tired?',
+      topic: 'Doubt',
+      ai: AI_TAKEAWAYS.Doubt,
+      helpful: 18,
+      comments: [
+        {
+          id: 'c1',
+          author: 'Kuya Ben',
+          byLeader: false,
+          text: 'Habakkuk wrote this while the fields were empty. Honest questions are still prayers.',
+          createdAt: isoAgo(10 * HOUR, now),
+        },
+        {
+          id: 'c2',
+          author: 'Anonymous Youth',
+          byLeader: false,
+          text: 'Same here. Thank you for asking this out loud.',
+          createdAt: isoAgo(6 * HOUR, now),
+        },
+      ],
+    }),
+    q({
+      id: 'q2',
+      author: 'Anonymous Youth',
+      church: 'San Pedro',
+      status: 'answered',
+      createdAt: isoAgo(2 * DAY, now),
+      title: 'My worship feels empty lately. Am I faking it?',
+      body: 'I serve on the worship team and I am good at the notes, but my heart is somewhere else. I feel like a performer instead of a believer.',
+      topic: 'Prayer',
+      ai: AI_TAKEAWAYS.Prayer,
+      helpful: 32,
+      comments: [
+        {
+          id: 'c3',
+          author: 'Ate Rina',
+          authorId: 'u-rina',
+          byLeader: true,
+          text: 'Dry seasons are normal. Keep showing up, and sit out one Sunday just to listen.',
+          createdAt: isoAgo(1 * DAY, now),
+        },
+      ],
+    }),
+    q({
+      id: 'q3',
+      author: 'Jessa',
+      authorId: 'u-jessa',
+      church: 'Calamba',
+      status: 'unanswered',
+      createdAt: isoAgo(5 * HOUR, now),
+      title: 'My barkada stopped inviting me after I joined youth group',
+      body: 'We used to hang out every weekend. Now I get left out of the group chat. How do I stay kind without losing my friends or my faith?',
+      topic: 'Relationships',
+      ai: AI_TAKEAWAYS.Relationships,
+      helpful: 9,
+      comments: [],
+    }),
+    q({
+      id: 'q4',
+      author: 'Anonymous Youth',
+      church: 'Santa Rosa',
+      status: 'answered',
+      createdAt: isoAgo(4 * DAY, now),
+      title: 'How do I stop panicking about tuition and family finances?',
+      body: 'My dad’s work hours were cut and I might have to stop school next semester. I cannot sleep, and everyone tells me to just have faith.',
+      topic: 'Anxiety',
+      ai: AI_TAKEAWAYS.Anxiety,
+      helpful: 41,
+      comments: [
+        {
+          id: 'c4',
+          author: 'Ate Rina',
+          authorId: 'u-rina',
+          byLeader: true,
+          text: 'Faith and a scholarship search can happen together. Talk to our youth pastor this Sunday.',
+          createdAt: isoAgo(3 * DAY, now),
+        },
+      ],
+    }),
+    q({
+      id: 'q5',
+      author: 'Anonymous Youth',
+      church: 'Biñan',
+      status: 'unanswered',
+      createdAt: isoAgo(14 * HOUR, now),
+      title: 'Is it wrong to have questions about the Bible?',
+      body: 'Some parts of the Old Testament are hard for me to understand. My classmates say Christians just believe without thinking. Can I ask questions and still have faith?',
+      topic: 'Doubt',
+      ai: AI_TAKEAWAYS.Doubt,
+      helpful: 7,
+      comments: [
+        {
+          id: 'c5',
+          author: 'Jessa',
+          authorId: 'u-jessa',
+          byLeader: false,
+          text: 'I had the same questions last year. Asking them in youth group helped me a lot.',
+          createdAt: isoAgo(9 * HOUR, now),
+        },
+      ],
+    }),
+    q({
+      id: 'q6',
+      author: 'Anonymous Youth',
+      church: 'Los Baños',
+      status: 'answered',
+      createdAt: isoAgo(3 * DAY, now),
+      title: 'How do I know if my faith is real or just habit?',
+      body: 'I grew up in church, so I do everything automatically. Lately I wonder if I actually believe or if it is just what my family does.',
+      topic: 'Doubt',
+      ai: AI_TAKEAWAYS.Doubt,
+      helpful: 15,
+      comments: [
+        {
+          id: 'c6',
+          author: 'Jessa',
+          authorId: 'u-jessa',
+          byLeader: false,
+          text: 'Try reading one Gospel on your own, not because you have to. That is when it became mine.',
+          createdAt: isoAgo(2 * DAY + 5 * HOUR, now),
+        },
+        {
+          id: 'c7',
+          author: 'Ate Rina',
+          authorId: 'u-rina',
+          byLeader: true,
+          text: 'Habits are not the enemy of faith. Asking this question is a sign your faith is becoming your own.',
+          createdAt: isoAgo(2 * DAY, now),
+        },
+      ],
+    }),
+  ]
+}
 
 export const seedMedia: Media[] = [
   {
@@ -174,8 +236,13 @@ export const seedMedia: Media[] = [
   },
 ]
 
-// Interleave so the first screen shows both card styles.
-export const initialItems: FeedItem[] = seedQuestions.flatMap((q, i) => {
-  const m = seedMedia[i]
-  return m ? [q, m] : [q]
-})
+/** Interleave questions and media so the first screen shows both card styles. */
+export function createFeed(now = Date.now()): FeedItem[] {
+  const questions = createQuestions(now)
+  return questions.flatMap((question, i) => {
+    const m = seedMedia[i]
+    return m ? [question, m] : [question]
+  })
+}
+
+export const initialItems: FeedItem[] = createFeed()

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { X, Send, Share2, ThumbsUp, Play } from 'lucide-react'
+import { Flag, Play, Send, Share2, ThumbsUp, X } from 'lucide-react'
+import { timeAgo } from '@/shared/lib/dates'
 import { AiPill } from './QuestionCard'
 import { Cover } from './MediaCard'
 import { badge } from '../model/media'
@@ -13,6 +14,11 @@ interface Props {
   onHelpful: (id: string) => void
   onShare: (m: Media) => void
   onOpen: (id: string) => void
+  onReport: (id: string) => void
+  /** The current user already reported this question. */
+  reported: boolean
+  /** The current user's replies count as a leader answer. */
+  isLeader: boolean
 }
 
 export default function ReaderModal({
@@ -23,6 +29,9 @@ export default function ReaderModal({
   onHelpful,
   onShare,
   onOpen,
+  onReport,
+  reported,
+  isLeader,
 }: Props) {
   const [text, setText] = useState('')
 
@@ -67,20 +76,29 @@ export default function ReaderModal({
         {item.type === 'question' ? (
           <section className="p-8 pb-6 flex flex-col gap-5">
             <p className="text-xs text-sage pr-10">
-              {item.author} • {item.church} • {item.time}
+              {item.author} • {item.church} • {timeAgo(item.createdAt)}
             </p>
             <h2 className="font-serif text-3xl font-semibold leading-tight text-fg">
               {item.title}
             </h2>
             <p className="font-serif text-lg leading-relaxed text-fg/80">{item.body}</p>
             <AiPill ai={item.ai} large />
-            <button
-              onClick={() => onHelpful(item.id)}
-              aria-pressed={item.helped}
-              className={`self-start flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm border ${item.helped ? 'bg-emerald/20 border-emerald text-accent' : 'border-line text-fg/70 hover:bg-fg/5'}`}
-            >
-              <ThumbsUp size={14} /> Helpful · {item.helpful}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => onHelpful(item.id)}
+                aria-pressed={item.helped}
+                className={`self-start flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm border ${item.helped ? 'bg-emerald/20 border-emerald text-accent' : 'border-line text-fg/70 hover:bg-fg/5'}`}
+              >
+                <ThumbsUp size={14} /> Helpful · {item.helpful}
+              </button>
+              <button
+                onClick={() => onReport(item.id)}
+                disabled={reported}
+                className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm border border-line text-sage hover:bg-fg/5 disabled:opacity-60"
+              >
+                <Flag size={14} /> {reported ? 'Reported' : 'Report'}
+              </button>
+            </div>
           </section>
         ) : (
           <section>
@@ -123,8 +141,13 @@ export default function ReaderModal({
             <ul className="flex flex-col gap-4">
               {item.comments.map((c) => (
                 <li key={c.id} className="border-l-2 border-line pl-4">
-                  <p className="text-xs text-sage">
-                    {c.author} • {c.time}
+                  <p className="flex flex-wrap items-center gap-1.5 text-xs text-sage">
+                    {c.author} • {timeAgo(c.createdAt)}
+                    {c.byLeader && (
+                      <span className="rounded-full bg-emerald/15 px-2 py-px text-[11px] text-accent">
+                        Leader answer
+                      </span>
+                    )}
                   </p>
                   <p className="text-sm leading-relaxed mt-1">{c.text}</p>
                 </li>
@@ -149,6 +172,11 @@ export default function ReaderModal({
                 <Send size={16} />
               </button>
             </div>
+            <p className="mt-2 text-xs text-sage">
+              {isLeader
+                ? 'You are replying as a leader: your reply marks this question as answered.'
+                : 'Anyone can encourage. A reply from a Discipler/Leader marks the question as answered.'}
+            </p>
           </section>
         )}
 

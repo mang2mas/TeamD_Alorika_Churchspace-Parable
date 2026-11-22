@@ -26,9 +26,18 @@ interface Props {
   onOpen: (id: string) => void
   onHelpful: (id: string) => void
   onShare: (m: Media) => void
+  badgeFor?: (authorId?: string) => string | undefined
+  showReports?: boolean
 }
 
-export default function MasonryFeed({ items, onOpen, onHelpful, onShare }: Props) {
+export default function MasonryFeed({
+  items,
+  onOpen,
+  onHelpful,
+  onShare,
+  badgeFor,
+  showReports,
+}: Props) {
   const n = useColumnCount()
   if (!items.length)
     return (
@@ -42,18 +51,25 @@ export default function MasonryFeed({ items, onOpen, onHelpful, onShare }: Props
     )
   const cols = toColumns(items, n)
   return (
-    <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto px-4 py-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto px-4 py-6">
       {cols.map((col, ci) => (
         <div key={ci} className="flex flex-col gap-5">
           {col.map((it) =>
             it.type === 'question' ? (
-              <QuestionCard key={it.id} q={it} onOpen={onOpen} onHelpful={onHelpful} />
+              <QuestionCard
+                key={it.id}
+                q={it}
+                onOpen={onOpen}
+                onHelpful={onHelpful}
+                authorBadge={badgeFor?.(it.authorId)}
+                showReports={showReports}
+              />
             ) : (
               <MediaCard key={it.id} m={it} onOpen={onOpen} onShare={onShare} />
             ),
           )}
         </div>
       ))}
-    </main>
+    </div>
   )
 }

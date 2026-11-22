@@ -110,3 +110,6 @@ body {
     animation: none;
   }
 }
+
+/* Tailwind dark: variant follows our [data-theme] switch, not the OS setting. */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
