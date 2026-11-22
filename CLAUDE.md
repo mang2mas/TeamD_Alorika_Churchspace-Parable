@@ -9,7 +9,7 @@ Philippines. Read these before larger changes:
 
 - `docs/ARCHITECTURE.md`: stack, data model, RLS approach, decisions already made
 - `docs/SAFETY_AND_PRIVACY.md`: moderation, crisis flow, anonymity, minors, RA 10173
-- `docs/ROADMAP.md`: phases and their "done" checklists. **Current: Phase 0 done; Phase 1 next.**
+- `docs/ROADMAP.md`: phases and their "done" checklists. **Current: demo track** (all features on seed data, no backend). Production phases are parked until the team picks them up again.
 
 ## Commands
 

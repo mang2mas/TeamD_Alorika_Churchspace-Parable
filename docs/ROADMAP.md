@@ -4,6 +4,8 @@
 
 Each phase ships on its own. A phase is done only when every box is ticked **and** `npm run lint`, `npm run typecheck`, `npm test`, `supabase test db` and `npm run e2e` pass in CI.
 
+**Demo track (2026-11-22):** the team chose to build every feature first as a working demo on seed data (no backend, no real auth), to show organizers how the system works. Production phases 1–6 below are parked, not dropped. The demo's model code (streaks, prayer cap/waitlist, badges, sermon cards) has tests and carries over.
+
 **One change from the original brief (approved):** the moderation pipeline, including crisis detection, moves **into Phase 2**. Prayer requests are where people are most likely to write about self-harm or abuse ("please pray, I don't want to live anymore"). We can't ship free-text prayer requests without it. So the first Claude API use is the moderation classifier in Phase 2, not Sunday Cards.
 
 ---
